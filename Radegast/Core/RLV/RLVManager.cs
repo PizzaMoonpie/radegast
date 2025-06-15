@@ -596,6 +596,40 @@ namespace Radegast
 
                     case "remattach":
                     case "detach":
+					// RLVa
+                        if (rule.Param == "n")
+                        {
+                            lock (rules)
+                            {
+                                var existing = rules.Find(r =>
+                                    r.Behaviour == rule.Behaviour &&
+                                    r.Sender == rule.Sender &&
+                                    r.Option == rule.Option);
+
+                                if (existing != null)
+                                {
+                                    rules.Remove(existing);
+                                }
+                                rules.Add(rule);
+                                OnRLVRuleChanged(new RLVEventArgs(rule));
+                            }
+                        }
+                        else if (rule.Param == "y")
+                        {
+                            lock (rules)
+                            {
+                                if (rule.Option == "")
+                                {
+                                    rules.RemoveAll(r => r.Behaviour == rule.Behaviour && r.Sender == rule.Sender);
+                                }
+                                else
+                                {
+                                    rules.RemoveAll(r => r.Behaviour == rule.Behaviour && r.Sender == rule.Sender && r.Option == rule.Option);
+                                }
+                            }
+
+                            OnRLVRuleChanged(new RLVEventArgs(rule));
+                        }
                         if (rule.Param == "force")
                         {
                             if (!string.IsNullOrEmpty(rule.Option))
